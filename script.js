@@ -138,35 +138,43 @@ navLinkElements.forEach((link) => {
 // Observe all sections that have an id under <main>
 const sections = Array.from(document.querySelectorAll('main section[id]'));
 
-const observer = new IntersectionObserver(
-  (entries) => {
-    // Find the entry with the largest intersectionRatio that's intersecting
-    const visible = entries
-      .filter((e) => e.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+// Use viewport-center proximity to decide which section is active.
+let ticking = false;
+function updateActiveByViewportCenter() {
+  const viewportCenter = window.scrollY + window.innerHeight / 2;
+  let closest = { id: null, distance: Infinity };
 
-    if (!visible) return;
+  sections.forEach((sec) => {
+    const rect = sec.getBoundingClientRect();
+    const secTop = window.scrollY + rect.top;
+    const secCenter = secTop + rect.height / 2;
+    const dist = Math.abs(secCenter - viewportCenter);
+    if (dist < closest.distance) closest = { id: sec.id, distance: dist };
+  });
 
-    // Clear active state for all links
-    navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
+  if (!closest.id) return;
 
-    // Add active to all links that target the visible section
-    const id = visible.target.id;
-    const links = navLinksMap.get(id) || [];
-    links.forEach((l) => l.classList.add('active'));
-  },
-  { root: null, rootMargin: '-35% 0px -55% 0px', threshold: [0.1, 0.25, 0.5] }
-);
-
-sections.forEach((section) => observer.observe(section));
-
-// Ensure an initial active state (use About if present)
-const initial = document.getElementById('about') || sections[0];
-if (initial) {
-  const links = navLinksMap.get(initial.id) || [];
-  // small timeout so browser has rendered and observer can settle
-  setTimeout(() => links.forEach((l) => l.classList.add('active')), 50);
+  // Update active classes only if it changed
+  navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
+  const links = navLinksMap.get(closest.id) || [];
+  links.forEach((l) => l.classList.add('active'));
 }
+
+function onScrollOrResize() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      updateActiveByViewportCenter();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+window.addEventListener('scroll', onScrollOrResize, { passive: true });
+window.addEventListener('resize', onScrollOrResize);
+
+// Initial highlight
+setTimeout(updateActiveByViewportCenter, 60);
 
 document.querySelectorAll("[data-link]").forEach((card) => {
   card.addEventListener("click", () => {
