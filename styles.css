@@ -318,6 +318,15 @@ body {
   line-height: 1.45;
 }
 
+/* small card styles for the portrait highlights (non-invasive) */
+.highlight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(44,62,80,0.06);
+}
+
 
 .hero-copy h1 {
   font-size: clamp(2.2rem, 3vw, 3.3rem);
