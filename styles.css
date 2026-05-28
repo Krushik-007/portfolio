@@ -263,6 +263,7 @@ body {
   grid-template-columns: 1fr 260px;
   gap: 2rem;
   align-items: start;
+  position: relative;
 }
 
 .intro-text h1 {
@@ -276,6 +277,11 @@ body {
   gap: 1rem;
   align-items: flex-start;
   align-self: start;
+  /* take the right column out of flow so left column height determines card height */
+  position: absolute;
+  top: 2.4rem; /* match intro-card padding */
+  right: 2.4rem;
+  width: 260px;
 }
 
 .portrait-wrap {
@@ -668,6 +674,12 @@ body {
     height: auto;
     max-height: 180px;
   }
+
+/* On small screens, restore normal flow */
+@media (max-width: 960px) {
+  .intro-card { position: static; }
+  .intro-visual { position: static; width: 100%; }
+}
 
   .timeline-header {
     flex-direction: column;
