@@ -125,30 +125,48 @@ resizeCanvas();
 createNodes();
 animate();
 
-const sectionIds = ["about", "experience", "projects", "skills", "education", "contact"];
-const navLinks = new Map(
-  Array.from(document.querySelectorAll(".nav a")).map((link) => [
-    link.getAttribute("href")?.replace("#", ""),
-    link,
-  ])
-);
+// Build a map of section id -> all nav links that point to it (header + folder)
+const navLinkElements = Array.from(document.querySelectorAll('.nav a, .folder-link'));
+const navLinksMap = new Map();
+navLinkElements.forEach((link) => {
+  const id = link.getAttribute('href')?.replace('#', '');
+  if (!id) return;
+  if (!navLinksMap.has(id)) navLinksMap.set(id, []);
+  navLinksMap.get(id).push(link);
+});
+
+// Observe all sections that have an id under <main>
+const sections = Array.from(document.querySelectorAll('main section[id]'));
 
 const observer = new IntersectionObserver(
   (entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      navLinks.forEach((link) => link.classList.remove("active"));
-      const link = navLinks.get(entry.target.id);
-      if (link) link.classList.add("active");
-    });
+    // Find the entry with the largest intersectionRatio that's intersecting
+    const visible = entries
+      .filter((e) => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+    if (!visible) return;
+
+    // Clear active state for all links
+    navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
+
+    // Add active to all links that target the visible section
+    const id = visible.target.id;
+    const links = navLinksMap.get(id) || [];
+    links.forEach((l) => l.classList.add('active'));
   },
-  { rootMargin: "-40% 0px -50% 0px", threshold: 0.1 }
+  { root: null, rootMargin: '-35% 0px -55% 0px', threshold: [0.1, 0.25, 0.5] }
 );
 
-sectionIds.forEach((id) => {
-  const section = document.getElementById(id);
-  if (section) observer.observe(section);
-});
+sections.forEach((section) => observer.observe(section));
+
+// Ensure an initial active state (use About if present)
+const initial = document.getElementById('about') || sections[0];
+if (initial) {
+  const links = navLinksMap.get(initial.id) || [];
+  // small timeout so browser has rendered and observer can settle
+  setTimeout(() => links.forEach((l) => l.classList.add('active')), 50);
+}
 
 document.querySelectorAll("[data-link]").forEach((card) => {
   card.addEventListener("click", () => {
