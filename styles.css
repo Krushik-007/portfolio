@@ -260,7 +260,7 @@ body {
   box-shadow: var(--shadow);
   display: grid;
   /* use a fixed-width column for the portrait so text flows naturally */
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 280px;
   gap: 2rem;
   align-items: start;
 }
@@ -274,7 +274,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .portrait-wrap {
@@ -283,8 +283,8 @@ body {
   overflow: hidden;
   border: 1px solid var(--border);
   width: 100%;
-  max-width: 320px; /* match grid column */
-  height: 320px; /* fixed height to keep portrait same size */
+  max-width: 280px; /* match grid column */
+  height: 280px; /* fixed height to keep portrait same size */
 }
 
 .portrait-wrap img,
@@ -654,10 +654,10 @@ body {
   }
 
   .portrait-wrap img {
-    height: 200px;
+    height: 180px;
   }
   .portrait-wrap {
-    height: 200px;
+    height: 180px;
   }
 
   .timeline-header {
