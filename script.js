@@ -135,10 +135,12 @@ navLinkElements.forEach((link) => {
   navLinksMap.get(id).push(link);
 });
 
-// Observe all sections that have an id under <main>
-const sections = Array.from(document.querySelectorAll('main section[id]'));
+// Observe only the actual content sections, not the folder nav block.
+const sections = Array.from(document.querySelectorAll('main section[id]')).filter(
+  (section) => section.id !== 'portfolio-folder'
+);
 
-// Use viewport-center proximity to decide which section is active.
+// Use scroll position relative to the sticky header to decide which section is active.
 let ticking = false;
 function setActive(sectionId) {
   navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
@@ -146,26 +148,23 @@ function setActive(sectionId) {
   links.forEach((l) => l.classList.add('active'));
 }
 
-function updateActiveByViewportCenter() {
-  const viewportCenter = window.scrollY + window.innerHeight / 2;
-  let closest = { id: null, distance: Infinity };
+function updateActiveByScrollPosition() {
+  const headerHeight = header ? header.getBoundingClientRect().height : 0;
+  const activationLine = window.scrollY + headerHeight + 24;
+  let activeId = sections[0]?.id || null;
 
   sections.forEach((sec) => {
-    const rect = sec.getBoundingClientRect();
-    const secTop = window.scrollY + rect.top;
-    const secCenter = secTop + rect.height / 2;
-    const dist = Math.abs(secCenter - viewportCenter);
-    if (dist < closest.distance) closest = { id: sec.id, distance: dist };
+    const top = window.scrollY + sec.getBoundingClientRect().top;
+    if (top <= activationLine) activeId = sec.id;
   });
 
-  if (!closest.id) return;
-  setActive(closest.id);
+  if (activeId) setActive(activeId);
 }
 
 function onScrollOrResize() {
   if (!ticking) {
     window.requestAnimationFrame(() => {
-      updateActiveByViewportCenter();
+      updateActiveByScrollPosition();
       ticking = false;
     });
     ticking = true;
@@ -197,7 +196,7 @@ window.addEventListener('scroll', onScrollOrResize, { passive: true });
 window.addEventListener('resize', onScrollOrResize);
 
 // Initial highlight
-setTimeout(updateActiveByViewportCenter, 60);
+setTimeout(updateActiveByScrollPosition, 60);
 
 document.querySelectorAll("[data-link]").forEach((card) => {
   card.addEventListener("click", () => {
