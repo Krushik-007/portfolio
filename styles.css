@@ -23,19 +23,12 @@ html {
 body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top left, rgba(144, 202, 249, 0.25), transparent 45%),
-    radial-gradient(circle at bottom right, rgba(255, 140, 66, 0.18), transparent 55%),
-    var(--bg);
+  background: var(--bg);
   line-height: 1.6;
   overflow-x: hidden;
 }
 
-#network-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.8;
-}
+
 
 .container {
   width: min(1120px, 92%);
