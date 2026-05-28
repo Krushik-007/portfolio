@@ -283,13 +283,14 @@ body {
   border: 1px solid var(--border);
   width: 100%;
   max-width: 360px; /* match grid column */
+  height: 360px; /* fixed height to keep portrait same size */
 }
 
 .portrait-wrap img,
 .portrait {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -652,6 +653,9 @@ body {
   }
 
   .portrait-wrap img {
+    height: 240px;
+  }
+  .portrait-wrap {
     height: 240px;
   }
 
