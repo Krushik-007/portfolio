@@ -260,7 +260,7 @@ body {
   box-shadow: var(--shadow);
   display: grid;
   /* use a fixed-width column for the portrait so text flows naturally */
-  grid-template-columns: 1fr 220px;
+  grid-template-columns: 1fr 160px;
   gap: 2rem;
   align-items: start;
 }
@@ -284,7 +284,7 @@ body {
   overflow: hidden;
   border: 1px solid var(--border);
   width: 100%;
-  max-width: 220px; /* match grid column */
+  max-width: 160px; /* match grid column */
   height: auto; /* let image determine height to match text */
   align-self: start;
 }
@@ -657,11 +657,11 @@ body {
 
   .portrait-wrap img {
     height: auto;
-    max-height: 220px;
+    max-height: 140px;
   }
   .portrait-wrap {
     height: auto;
-    max-height: 220px;
+    max-height: 140px;
   }
 
   .timeline-header {
