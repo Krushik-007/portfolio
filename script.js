@@ -140,6 +140,12 @@ const sections = Array.from(document.querySelectorAll('main section[id]'));
 
 // Use viewport-center proximity to decide which section is active.
 let ticking = false;
+function setActive(sectionId) {
+  navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
+  const links = navLinksMap.get(sectionId) || [];
+  links.forEach((l) => l.classList.add('active'));
+}
+
 function updateActiveByViewportCenter() {
   const viewportCenter = window.scrollY + window.innerHeight / 2;
   let closest = { id: null, distance: Infinity };
@@ -153,11 +159,7 @@ function updateActiveByViewportCenter() {
   });
 
   if (!closest.id) return;
-
-  // Update active classes only if it changed
-  navLinksMap.forEach((links) => links.forEach((l) => l.classList.remove('active')));
-  const links = navLinksMap.get(closest.id) || [];
-  links.forEach((l) => l.classList.add('active'));
+  setActive(closest.id);
 }
 
 function onScrollOrResize() {
@@ -169,6 +171,27 @@ function onScrollOrResize() {
     ticking = true;
   }
 }
+
+// Smooth-scroll with offset for sticky header
+const header = document.querySelector('.site-header');
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const headerHeight = header ? header.getBoundingClientRect().height : 0;
+  const top = window.scrollY + el.getBoundingClientRect().top - headerHeight - 12;
+  window.scrollTo({ top, behavior: 'smooth' });
+  setActive(id);
+}
+
+// Attach click handlers to nav/folder links
+navLinkElements.forEach((link) => {
+  const id = link.getAttribute('href')?.replace('#', '');
+  if (!id) return;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    scrollToSection(id);
+  });
+});
 
 window.addEventListener('scroll', onScrollOrResize, { passive: true });
 window.addEventListener('resize', onScrollOrResize);
